@@ -53,5 +53,3 @@ pip install numpy scipy pandas pyyaml tqdm dill biopython biopandas scikit-learn
 # Step 4: Verify installation
 python -c "import torch; import torch_geometric; print('PyTorch:', torch.__version__, 'CUDA:', torch.cuda.is_available())"
 
-# Step 5: Optional cleanup (save disk space)
-conda clean --all
