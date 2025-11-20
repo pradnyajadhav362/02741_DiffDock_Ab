@@ -1,0 +1,46 @@
+data:
+    dataset: db5
+    data_file: /path/to/datasets/AADaM_full/_all_ids.csv
+    data_path: /path/to/datasets/AADaM_full
+    root: /path/to/datasets/AADaM_full/structures
+    structures_dir: /path/to/datasets/AADaM_full/structures
+    train_ids: /path/to/datasets/AADaM_full/splits/aadam_train.txt
+    val_ids: /path/to/datasets/AADaM_full/splits/aadam_val.txt
+    test_ids: /path/to/datasets/AADaM_full/splits/aadam_test.txt
+    resolution: residue
+    no_graph_cache: False
+    multiplicity: 1
+
+model:
+    model_type: e3nn
+    no_torsion: True
+    lm_embed_dim: 1280
+    dropout: 0.1
+    num_conv_layers: 4
+    ns: 16
+    nv: 4
+
+train:
+    patience: 50
+    epochs: 200
+    lr: 5.0e-6
+    weight_decay: 1.0e-4
+    batch_size: 8
+    num_workers: 4
+    save_every: 10
+    val_inference_freq: 10
+
+diffusion:
+    num_steps: 40
+    tr_s_min: 0.01
+    tr_s_max: 30.0
+    rot_s_min: 0.01
+    rot_s_max: 1.65
+    sample_train: True
+    num_inference_complexes_train_data: null
+
+logging:
+    out_dir: /path/to/outputs/finetune_full_aadam
+    wandb_mode: online
+
+
