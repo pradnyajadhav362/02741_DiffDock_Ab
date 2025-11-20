@@ -63,9 +63,9 @@ project_root/
     └── finetune_demo40_preempt.sbatch
 ```
 
-## configuration
+## Configuration
 
-### main config: `config/finetune_full_aadam.yaml`
+### Main config: `config/finetune_full_aadam.yaml`
 
 key parameters:
 - **epochs**: 200 (with early stopping patience=50)
@@ -76,9 +76,9 @@ key parameters:
 
 see `config/finetune_full_aadam.yaml` for full configuration.
 
-## training workflow
+## Training workflow
 
-### 1. data preprocessing
+### 1. Data preprocessing
 
 on first run, the pipeline:
 - loads structure files
@@ -88,28 +88,28 @@ on first run, the pipeline:
 
 subsequent runs load from cache (5-10 min).
 
-### 2. multi-gpu training
+### 2. Multi-gpu training
 
 using pytorch dataparallel across 3x a100 gpus:
 - effective batch size: 24 (8 per gpu)
 - memory: 400gb system ram, 80gb per gpu
 - walltime: 48 hours
 
-### 3. checkpointing
+### 3. Checkpointing
 
 model saves every 10 epochs:
 - best validation model
 - latest checkpoint for resuming
 - training logs and metrics
 
-## memory optimizations
+## Memory optimizations
 
 several key optimizations were needed:
 
-1. **reduced esm batch size**: from 32 → 4
-2. **explicit cache clearing**: `torch.cuda.empty_cache()` after each batch
-3. **increased system ram**: 400gb for full dataset
-4. **graph caching**: avoid recomputing molecular graphs
+1. **Reduced esm batch size**: from 32 → 4
+2. **Explicit cache clearing**: `torch.cuda.empty_cache()` after each batch
+3. **Increased system ram**: 400gb for full dataset
+4. **Graph caching**: avoid recomputing molecular graphs
 
 see `src/data/data_train_utils.py` line 364 and `src/train.py` line 72.
 
@@ -188,41 +188,16 @@ The demo validates that:
 
 **Note**: Demo trained from scratch due to checkpoint path compatibility issues on demo hardware. Full training uses pretrained DIPS checkpoint for better initialization.
 
-## troubleshooting
+## Troubleshooting
 
-### cuda oom errors
+### Cuda oom errors
 
 reduce batch size or esm batch size in config.
 
-### system ram oom
+### System ram oom
 
 increase `--mem` in slurm script or disable caching temporarily.
 
-### corrupted cache files
 
-delete `.pkl` cache files in dataset directory and rerun.
-
-## citation
-
-if using this pipeline, please cite:
-
-```bibtex
-@article{martinkus2023diffdock,
-  title={DiffDock-AB: Learning Antibody-Antigen Complex Structure Prediction with Diffusion Models},
-  author={Martinkus, Karolis and others},
-  journal={arXiv preprint},
-  year={2023}
-}
-```
-
-## license
-
-this code follows the original diffdock-ab license. see the main repository for details.
-
-## acknowledgments
-
-- diffdock-ab authors for the base model
-- aadam dataset creators
-- hpc cluster resources
 
 
