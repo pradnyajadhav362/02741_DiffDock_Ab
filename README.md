@@ -1,49 +1,49 @@
 # DiffDock-Ab Fine-tuning on AADaM Dataset
 
-fine-tuning the diffdock-ab antibody-antigen docking model on the full aadam dataset (10k+ structures)
+Fine-tuning the DiffDock-Ab antibody-antigen docking model on the full AADaM dataset (10k+ structures).
 
-## overview
+## Overview
 
-this repo contains the training pipeline for fine-tuning diffdock-ab on the aadam antibody-antigen dataset. the workflow includes data preprocessing, caching optimizations, and multi-gpu training on hpc clusters.
+This repository contains the training pipeline for fine-tuning DiffDock-Ab on the AADaM antibody-antigen dataset. The workflow includes data preprocessing, caching optimizations, and multi-GPU training on HPC clusters.
 
-## key features
+## Key Features
 
-- **full dataset training**: 10,892 antibody-antigen structures
-- **efficient caching**: esm embeddings and graph structures cached to disk
-- **multi-gpu support**: distributed training across 3x a100 gpus
-- **memory optimization**: reduced esm batch size and explicit cache clearing
-- **checkpoint resuming**: continue training from any saved checkpoint
+- **Full Dataset Training**: 10,892 antibody-antigen structures
+- **Efficient Caching**: ESM embeddings and graph structures cached to disk
+- **Multi-GPU Support**: Distributed training across 3× A100 GPUs
+- **Memory Optimization**: Reduced ESM batch size and explicit cache clearing
+- **Checkpoint Resuming**: Continue training from any saved checkpoint
 
-## dataset
+## Dataset
 
-**aadam (antibody-antigen docking and modeling)**
-- total structures: 10,892
-- train split: 8,713 (80%)
-- val split: 1,090 (10%)
-- test split: 1,089 (10%)
+**AADaM (Antibody-Antigen Docking and Modeling)**
+- Total structures: 10,892
+- Train split: 8,713 (80%)
+- Val split: 1,090 (10%)
+- Test split: 1,089 (10%)
 
-structures are in pdb format with separate files for receptor (antibody) and ligand (antigen) chains.
+Structures are in PDB format with separate files for receptor (antibody) and ligand (antigen) chains.
 
-## setup
+## Setup
 
-### requirements
+### Requirements
 
 ```bash
-# python 3.10+
+# Python 3.10+
 conda create -n diffdock_ab python=3.10
 conda activate diffdock_ab
 
-# clone diffdock-ab
+# Clone DiffDock-Ab
 git clone https://github.com/ketatam/DiffDock-Ab.git
 cd DiffDock-Ab
 
-# install dependencies
+# Install dependencies
 pip install torch torchvision torchaudio --index-url https://pytorch.org/get-started/locally/
 pip install -r requirements.txt
 pip install wandb
 ```
 
-### directory structure
+### Directory Structure
 
 ```
 project_root/
@@ -113,21 +113,21 @@ several key optimizations were needed:
 
 see `src/data/data_train_utils.py` line 364 and `src/train.py` line 72.
 
-## running the code
+## Running the Code
 
-### option 1: fine-tuning from pretrained checkpoint (recommended)
+### Option 1: Fine-tuning from Pretrained Checkpoint (Recommended)
 
-uses dips pretrained weights as initialization:
+Uses DIPS pretrained weights as initialization:
 
 ```bash
 sbatch scripts/finetune_fast_a100.sbatch
 ```
 
-this script includes `--checkpoint_path` pointing to the pretrained model.
+This script includes `--checkpoint_path` pointing to the pretrained model.
 
-### option 2: training from scratch
+### Option 2: Training from Scratch
 
-to train without pretrained initialization, remove the `--checkpoint_path` argument:
+To train without pretrained initialization, remove the `--checkpoint_path` argument:
 
 ```bash
 python src/main.py \
@@ -140,53 +140,53 @@ python src/main.py \
     --num_gpu 3
 ```
 
-**note**: training from scratch requires more epochs and may yield higher rmsd initially. the 100-structure demo was trained from scratch as proof-of-concept.
+**Note**: Training from scratch requires more epochs and may yield higher RMSD initially. The 100-structure demo was trained from scratch as proof-of-concept.
 
-### quick demo (40 structures)
+### Quick Demo (40 Structures)
 
-for testing or quick results:
+For testing or quick results:
 
 ```bash
 sbatch scripts/finetune_demo40_preempt.sbatch
 ```
 
-runs in ~30 min with 40 structures over 20 epochs.
+Runs in ~30 min with 40 structures over 20 epochs.
 
-## monitoring
+## Monitoring
 
-training metrics logged to weights & biases:
-- train/val loss per epoch
-- learning rate schedule
-- gpu memory usage
-- rmsd metrics
+Training metrics logged to Weights & Biases:
+- Train/val loss per epoch
+- Learning rate schedule
+- GPU memory usage
+- RMSD metrics
 
-## results
+## Results
 
-### full-scale training (planned)
+### Full-Scale Training (Planned)
 
-training on 10,892 structures with:
-- pretrained checkpoint from dips dataset
+Training on 10,892 structures with:
+- Pretrained checkpoint from DIPS dataset
 - 200 epochs with early stopping
-- validation every 10 epochs (1,089 structures)
-- best model saved based on validation loss
-- expected runtime: ~14 hours on 3x a100 gpus
+- Validation every 10 epochs (1,089 structures)
+- Best model saved based on validation loss
+- Expected runtime: ~14 hours on 3× A100 GPUs
 
-### demonstration training (completed)
+### Demonstration Training (Completed)
 
-proof-of-concept on 100 structures:
-- **trained from scratch** (no pretrained checkpoint)
+Proof-of-concept on 100 structures:
+- **Trained from scratch** (no pretrained checkpoint)
 - 16 epochs completed (early stopping)
-- batch size 2 on single l40s gpu
-- validation loss: 1.055 → 0.209 (80% reduction)
-- runtime: ~5 minutes
+- Batch size 2 on single L40S GPU
+- Validation loss: 1.055 → 0.209 (80% reduction)
+- Runtime: ~5 minutes
 
-the demo validates that:
-- pipeline handles dataset preprocessing correctly
-- model learns antibody-antigen binding patterns
-- training converges despite small dataset size
-- full-scale training is feasible with optimizations
+The demo validates that:
+- Pipeline handles dataset preprocessing correctly
+- Model learns antibody-antigen binding patterns
+- Training converges despite small dataset size
+- Full-scale training is feasible with optimizations
 
-**note**: demo trained from scratch due to checkpoint path compatibility issues on demo hardware. full training uses pretrained dips checkpoint for better initialization.
+**Note**: Demo trained from scratch due to checkpoint path compatibility issues on demo hardware. Full training uses pretrained DIPS checkpoint for better initialization.
 
 ## troubleshooting
 
